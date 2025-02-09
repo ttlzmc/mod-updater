@@ -11,17 +11,30 @@ import java.util.jar.JarFile
 
 object ModFinder {
 
-    fun onFileChosen(file: File) {
+    var modsFolderFound: Boolean = false
+
+    fun onFileChosen(file: File): List<Mod> {
         val mods = inspect(file)
         if (mods.isEmpty()) {
-            UpdaterWindow.setStatusFieldText("It seems like your mods folder is empty! Are you sure?",
+            UpdaterWindow.setStatusFieldText(
+                "It seems like your mods folder is empty! Are you sure?",
                 Color.GRAY
             )
-            return
+            throw RuntimeException("It seems like your mods folder is empty!")
         }
         val mapped = mods.map { Mod(it) }.toCollection(mutableListOf())
+        val fabricSize = mapped.count { it.loader == Loader.FABRIC }
+        val quiltSize = mapped.count { it.loader == Loader.QUILT }
+        val forgeSize = mapped.count { it.loader == Loader.FORGE }
+        val sizes = ", " +
+                if (fabricSize > 0) "Fabric mods: $fabricSize" else "" +
+                        if (quiltSize > 0) ", Qult mods: $quiltSize" else "" +
+                                if (forgeSize > 0) ", Forge mods: $forgeSize" else ""
+
         UpdaterWindow.debugLogger.info("Found mods: ${mapped.size}")
-        UpdaterWindow.setStatusFieldText("Found mods: ${mapped.size}", Color.GRAY)
+        UpdaterWindow.setStatusFieldText("Found mods: ${mapped.size}" + sizes, Color.GRAY)
+        modsFolderFound = true
+        return mapped
     }
 
     fun inspect(modsDir: File): Collection<ModInfo> {
@@ -46,10 +59,10 @@ object ModFinder {
 
                     else -> {
                         UpdaterWindow.setStatusFieldText(
-                            "Mods folder is empty or loader type not supported.",
+                            "Mods folder is empty or loader type is not supported.",
                             Color.RED
                         )
-                        throw RuntimeException("Mods folder is empty or loaders not supported")
+                        throw RuntimeException("Mods folder is empty or loader type is not supported")
                     }
                 }
             }

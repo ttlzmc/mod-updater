@@ -19,5 +19,10 @@ class Mod(info: ModInfo) {
 
     val loader: Loader = info.loader
 
-    lateinit var availableVersion: String
+    lateinit var modrinthProjectData: JSONObject
+
+    fun fetchModrinthData() {
+
+    }
+
 }

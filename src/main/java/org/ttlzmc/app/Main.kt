@@ -6,6 +6,8 @@ import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.scene.Scene
 import javafx.scene.control.Button
+import javafx.scene.control.ContextMenu
+import javafx.scene.control.MenuItem
 import javafx.scene.control.TextField
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
@@ -15,10 +17,13 @@ import javafx.stage.DirectoryChooser
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 import org.ttlzmc.core.ModFinder
+import org.ttlzmc.core.mod.Mod
 
 import org.ttlzmc.hwd.DwmAttribute
 import org.ttlzmc.hwd.HwndLookupException
 import org.ttlzmc.hwd.WindowHandle
+import org.ttlzmc.minecraft.MinecraftVersion
+import java.io.File
 import java.util.logging.Logger
 
 fun main() {
@@ -44,6 +49,9 @@ class UpdaterWindow : Application() {
 
     override fun start(stage: Stage) {
 
+        lateinit var mods: List<Mod>
+        lateinit var minecraftVersion: MinecraftVersion
+
         val info = Text("Select your version mods folder.").apply {
             font = FontBuilder.sizeOf(25.0)
         }
@@ -58,29 +66,86 @@ class UpdaterWindow : Application() {
             prefHeight = 20.0
         }
 
+        val buttonProceed = Button("Continue").apply {
+            prefWidth = 100.0
+            prefHeight = 5.0
+
+            setOnMouseClicked {
+                if (ModFinder.modsFolderFound) {
+                    stage.scene = Scene(ProcessWindow.init(mods, minecraftVersion)).apply {
+                        stylesheets.add("fluent-light.css")
+                        style = "-fx-background-color: transparent"
+                        fill = Color.TRANSPARENT
+                    }
+                    stage.sizeToScene()
+                } else {
+                    setStatusFieldText("Mods folder not found!", Color.RED)
+                }
+            }
+        }
+
         buttonSelectFolder.setOnMouseClicked {
             setStatusFieldText("Inspecting your mods...", Color.BLACK)
             debugLogger.info("Inspecting your mods...")
             val dirChooser = DirectoryChooser()
+            dirChooser.initialDirectory = File(System.getProperty("user.home"), "AppData")
             dirChooser.title = "Select Mods Folder"
             val selectedDirectory = dirChooser.showDialog(stage)
 
             if (selectedDirectory != null && selectedDirectory.isDirectory) {
-                textField.text = selectedDirectory.absolutePath // Устанавливаем текст в textField
+                textField.text = selectedDirectory.absolutePath
             }
-            ModFinder.onFileChosen(selectedDirectory)
+            mods = ModFinder.onFileChosen(selectedDirectory)
         }
 
-        val hBox = HBox().apply {
-            spacing = 5.0
+        val folderSelectionLevel = HBox().apply {
             alignment = Pos.CENTER
             children.addAll(textField, buttonSelectFolder)
         }
 
+        val selectVersionText = Text("Version").apply {
+            font = FontBuilder.sizeOf(15.0)
+        }
+
+        val items = arrayListOf<MenuItem>()
+        for (version in MinecraftVersion.entries) {
+            items.add(MenuItem(version.string).apply {
+                setOnAction {
+                    selectVersionText.text = version.string
+                    minecraftVersion = version
+                }
+            })
+        }
+
+        val versionsContextMenu = ContextMenu().apply {
+            items.addAll(items)
+        }
+
+        val selectedVersionTextField = TextField().apply {
+            isEditable = false
+            prefHeight = 5.0
+            prefWidth = 120.0
+        }
+
+        val openContextMenuButton = Button("Select").apply {
+            prefWidth = 20.0
+            prefHeight = 5.0
+            setOnMouseClicked {
+                openContextMenu(this, versionsContextMenu)
+            }
+        }
+
+        val versionSelectionLevel = HBox().apply {
+            spacing = 5.0
+            alignment = Pos.CENTER
+            children.addAll(selectVersionText, selectedVersionTextField, openContextMenuButton)
+        }
+
         root.alignment = Pos.CENTER
+        root.spacing = 15.0
         root.style = "-fx-background-color: transparent"
 
-        root.children.addAll(info, statusField, hBox)
+        root.children.addAll(info, statusField, folderSelectionLevel, versionSelectionLevel ,buttonProceed)
 
         rootScene.heightProperty().addListener { _, _, height ->
             root.spacing = (height.toDouble() / 20)
@@ -90,11 +155,20 @@ class UpdaterWindow : Application() {
         rootScene.fill = Color.TRANSPARENT
         stage.scene = rootScene
         stage.initStyle(StageStyle.UNIFIED)
-        stage.title = "welcome-stage"
+        stage.title = "Modpack Updater"
 
         this.setMica(stage, true)
 
         stage.show()
+    }
+
+    private fun openContextMenu(openButton: Button, menu: ContextMenu) {
+        val scene = openButton.scene
+        menu.show(
+            scene.window,
+            scene.window.x + openButton.layoutX,
+            scene.window.y + 25 + openButton.layoutY,
+        )
     }
 
     private fun setMica(stage: Stage, set: Boolean) {
