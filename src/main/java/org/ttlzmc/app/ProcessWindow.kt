@@ -8,6 +8,7 @@ import javafx.scene.layout.VBox
 import javafx.scene.text.Text
 import org.ttlzmc.core.mod.Mod
 import org.ttlzmc.minecraft.MinecraftVersion
+import org.ttlzmc.utils.FontBuilder
 
 object ProcessWindow {
 
@@ -23,7 +24,7 @@ object ProcessWindow {
         vbox.padding = Insets(30.0, 20.0, 20.0, 20.0)
 
         val label = Text("Now, let's see what we got:")
-        label.font = FontBuilder.sizeOfi(20)
+        label.font = FontBuilder.sizeOf(20)
 
         val scrollPane = ScrollPane()
         scrollPane.maxWidth = 500.0

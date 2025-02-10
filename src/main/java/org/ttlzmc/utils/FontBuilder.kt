@@ -1,4 +1,4 @@
-package org.ttlzmc.app
+package org.ttlzmc.utils
 
 import javafx.scene.text.Font
 
@@ -10,7 +10,7 @@ object FontBuilder {
         return Font.font(FONT_NAME, double)
     }
 
-    fun sizeOfi(int: Int): Font {
+    fun sizeOf(int: Int): Font {
         return Font.font(FONT_NAME, int.toDouble())
     }
 
