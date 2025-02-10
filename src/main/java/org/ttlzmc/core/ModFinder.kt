@@ -4,7 +4,6 @@ import javafx.scene.paint.Color
 import org.json.JSONObject
 import org.ttlzmc.app.UpdaterWindow
 import org.ttlzmc.core.mod.Loader
-import org.ttlzmc.core.mod.Mod
 import org.ttlzmc.core.mod.ModInfo
 import java.io.File
 import java.util.jar.JarFile
@@ -13,8 +12,9 @@ object ModFinder {
 
     var modsFolderFound: Boolean = false
 
-    fun onFileChosen(file: File): List<Mod> {
-        val mods = inspect(file)
+    fun findMods(folder: File): List<ModInfo> {
+        modsFolderFound = true
+        val mods = findModInfo(folder)
         if (mods.isEmpty()) {
             UpdaterWindow.setStatusFieldText(
                 "It seems like your mods folder is empty! Are you sure?",
@@ -22,22 +22,23 @@ object ModFinder {
             )
             throw RuntimeException("It seems like your mods folder is empty!")
         }
-        val mapped = mods.map { Mod(it) }.toCollection(mutableListOf())
-        val fabricSize = mapped.count { it.loader == Loader.FABRIC }
-        val quiltSize = mapped.count { it.loader == Loader.QUILT }
-        val forgeSize = mapped.count { it.loader == Loader.FORGE }
-        val sizes = ", " +
-                if (fabricSize > 0) "Fabric mods: $fabricSize" else "" +
-                        if (quiltSize > 0) ", Qult mods: $quiltSize" else "" +
-                                if (forgeSize > 0) ", Forge mods: $forgeSize" else ""
-
-        UpdaterWindow.debugLogger.info("Found mods: ${mapped.size}")
-        UpdaterWindow.setStatusFieldText("Found mods: ${mapped.size}" + sizes, Color.GRAY)
-        modsFolderFound = true
-        return mapped
+        val modsCount = modsCountByLoaders(mods)
+        UpdaterWindow.debugLogger.info(modsCount)
+        UpdaterWindow.setStatusFieldText(modsCount, Color.GRAY)
+        return mods
     }
 
-    fun inspect(modsDir: File): Collection<ModInfo> {
+    private fun modsCountByLoaders(mods: List<ModInfo>): String {
+        val fabricMods = mods.count { it.loader == Loader.FABRIC }
+        val quiltMods = mods.count { it.loader == Loader.QUILT }
+        val forgeMods = mods.count { it.loader == Loader.FORGE }
+        return "Total: ${mods.size}" +
+                if (fabricMods > 0) ", $fabricMods fabric" else "" +
+                        if (quiltMods > 0) ", $quiltMods quilt, " else "" +
+                                if (forgeMods > 0) ", $forgeMods forge, " else ""
+    }
+
+    private fun findModInfo(modsDir: File): List<ModInfo> {
         val mods = mutableListOf<ModInfo>()
 
         val jars = modsDir.listFiles { file -> file.extension == "jar" } ?: return mods

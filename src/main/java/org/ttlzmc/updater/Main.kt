@@ -16,7 +16,6 @@ import javafx.stage.DirectoryChooser
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 import org.ttlzmc.core.ModFinder
-import org.ttlzmc.core.mod.Mod
 import org.ttlzmc.hwd.DwmAttribute
 import org.ttlzmc.hwd.HwndLookupException
 import org.ttlzmc.hwd.WindowHandle
@@ -107,7 +106,7 @@ class UpdaterWindow : Application() {
 
             setOnMouseClicked {
                 if (ModFinder.modsFolderFound) {
-                    primaryStage.scene = Scene(SecondWindow.init()).apply {
+                    primaryStage.scene = Scene(ResultPage.init()).apply {
                         stylesheets.add("fluent-light.css")
                     }
                     primaryStage.sizeToScene()

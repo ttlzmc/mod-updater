@@ -1,6 +1,6 @@
 package org.ttlzmc.core.api
 
-import org.ttlzmc.core.mod.Mod
+import org.ttlzmc.core.mod.ModInfo
 import java.net.URI
 import java.net.URL
 
@@ -14,7 +14,7 @@ object ModrinthAPILinksProvider {
         return modName.map { getProject(it) }
     }
 
-    fun getProjectIcon(mod: Mod): URL {
+    fun getProjectIcon(mod: ModInfo): URL {
         return URI.create(ModrinthAPIProvider.getProjectRaw(mod).getString("icon_url")).toURL()
     }
 

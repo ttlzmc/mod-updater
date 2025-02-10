@@ -7,6 +7,8 @@ object TextBuilder {
 
     fun newBuilder() = Builder()
 
+    fun newBuilder(text: String) = Builder(text)
+
     class Builder(text: String = "") {
 
         private val temp = Text(text)

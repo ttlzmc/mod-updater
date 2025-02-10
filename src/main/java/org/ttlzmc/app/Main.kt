@@ -16,7 +16,7 @@ import javafx.stage.DirectoryChooser
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 import org.ttlzmc.core.ModFinder
-import org.ttlzmc.core.mod.Mod
+import org.ttlzmc.core.mod.ModInfo
 
 import org.ttlzmc.hwd.DwmAttribute
 import org.ttlzmc.hwd.HwndLookupException
@@ -49,7 +49,7 @@ class UpdaterWindow : Application() {
 
     override fun start(stage: Stage) {
 
-        lateinit var mods: List<Mod>
+        lateinit var mods: List<ModInfo>
         lateinit var minecraftVersion: MinecraftVersion
 
         val info = Text("Select your version mods folder.").apply {
@@ -95,7 +95,7 @@ class UpdaterWindow : Application() {
             if (selectedDirectory != null && selectedDirectory.isDirectory) {
                 textField.text = selectedDirectory.absolutePath
             }
-            mods = ModFinder.onFileChosen(selectedDirectory)
+            mods = ModFinder.findMods(selectedDirectory)
         }
 
         val folderSelectionLevel = HBox().apply {

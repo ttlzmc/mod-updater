@@ -6,7 +6,6 @@ import javafx.scene.control.ScrollPane
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.VBox
 import javafx.scene.text.Text
-import org.ttlzmc.core.mod.Mod
 import org.ttlzmc.minecraft.MinecraftVersion
 import org.ttlzmc.utils.FontBuilder
 
