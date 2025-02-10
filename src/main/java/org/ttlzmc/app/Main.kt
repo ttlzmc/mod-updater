@@ -1,4 +1,4 @@
-package org.ttlzmc.updater
+package org.ttlzmc.app
 
 import javafx.application.Application
 import javafx.application.Platform
@@ -21,12 +21,13 @@ import org.ttlzmc.core.mod.ModInfo
 import org.ttlzmc.hwd.DwmAttribute
 import org.ttlzmc.hwd.HwndLookupException
 import org.ttlzmc.hwd.WindowHandle
-import org.ttlzmc.minecraft.MinecraftVersion
+import org.ttlzmc.minecraft.MinecraftVersions
 import org.ttlzmc.utils.FontBuilder
 import org.ttlzmc.utils.TextBuilder
 import java.io.File
 
 fun main(args: Array<String>) {
+    MinecraftVersions.load()
     Application.launch(UpdaterWindow::class.java, *args)
 }
 
@@ -49,7 +50,7 @@ class UpdaterWindow : Application() {
     private val rootScene = Scene(root, 500.0, 300.0)
 
     private lateinit var primaryStage: Stage
-    private lateinit var selectedMinecraftVersion: MinecraftVersion
+    private lateinit var selectedMinecraftVersion: MinecraftVersions.MinecraftVersion
     private lateinit var foundMods: List<ModInfo>
 
     private lateinit var info: Text
@@ -141,15 +142,15 @@ class UpdaterWindow : Application() {
         }
 
         val items = arrayListOf<MenuItem>()
-        for (version in MinecraftVersion.entries) {
-            items.add(MenuItem(version.string).apply {
+        for (version in MinecraftVersions.entries()) {
+            items.add(MenuItem(version.value).apply {
                 setOnAction {
-                    selectedVersion.text = version.string
+                    selectedVersion.text = version.value
                 }
             })
         }
-        selectedMinecraftVersion = MinecraftVersion.entries.first()
-        selectedVersion.text = selectedMinecraftVersion.string
+        selectedMinecraftVersion = MinecraftVersions.entries().first()
+        selectedVersion.text = selectedMinecraftVersion.value
 
         contextMenu.apply {
             this.items.addAll(items)

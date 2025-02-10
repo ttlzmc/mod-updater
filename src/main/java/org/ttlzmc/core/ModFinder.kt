@@ -4,7 +4,7 @@ import javafx.scene.paint.Color
 import org.json.JSONObject
 import org.ttlzmc.core.mod.Loader
 import org.ttlzmc.core.mod.ModInfo
-import org.ttlzmc.updater.UpdaterWindow
+import org.ttlzmc.app.UpdaterWindow
 import java.io.File
 import java.util.jar.JarFile
 
