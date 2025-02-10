@@ -109,14 +109,19 @@
     -fx-page-indicator-hover-border:#accee5;
     -fx-focused-text-base-color:ladder(-fx-selection-bar, -fx-light-text-color 45%, -fx-dark-text-color 46%, -fx-dark-text-color 59%, -fx-mid-text-color 60%);
     -fx-focused-mark-color:-fx-focused-text-base-color;
-    -fx-background-color:-fx-background
+    -fx-background-color:-fx-background;
 }
 
 .root.popup{
     -fx-background-color:rgba(0,0,0,0)}
 
 .scroll-pane,.split-pane,.list-view,.table-view,.tree-table-view,.html-editor{
-    -fx-background-color:-fx-control-inner-background
+    -fx-background-color:-fx-control-inner-background;
+    -fx-background-radius: 15, 15, 15, 15;
+}
+
+.scroll-pane>.viewport {
+    -fx-background-radius: 15, 15, 15, 15;
 }
 
 .label:disabled,.radio-button:disabled,.slider:disabled,.scroll-bar:disabled,.scroll-pane:disabled,.progress-bar:disabled,.text-input:disabled,.list-view:disabled,.tree-view:disabled,.table-view:disabled,.tree-table-view:disabled,.titled-pane:disabled>.title,.spinner:disabled{

@@ -2,9 +2,9 @@ package org.ttlzmc.core
 
 import javafx.scene.paint.Color
 import org.json.JSONObject
-import org.ttlzmc.app.UpdaterWindow
 import org.ttlzmc.core.mod.Loader
 import org.ttlzmc.core.mod.ModInfo
+import org.ttlzmc.updater.UpdaterWindow
 import java.io.File
 import java.util.jar.JarFile
 
@@ -16,15 +16,14 @@ object ModFinder {
         modsFolderFound = true
         val mods = findModInfo(folder)
         if (mods.isEmpty()) {
-            UpdaterWindow.setStatusFieldText(
+            UpdaterWindow.status(
                 "It seems like your mods folder is empty! Are you sure?",
-                Color.GRAY
+                Color.LIGHTGRAY
             )
             throw RuntimeException("It seems like your mods folder is empty!")
         }
         val modsCount = modsCountByLoaders(mods)
-        UpdaterWindow.debugLogger.info(modsCount)
-        UpdaterWindow.setStatusFieldText(modsCount, Color.GRAY)
+        UpdaterWindow.status(modsCount, Color.LIGHTGRAY)
         return mods
     }
 
@@ -59,11 +58,11 @@ object ModFinder {
                     }
 
                     else -> {
-                        UpdaterWindow.setStatusFieldText(
-                            "Mods folder is empty or loader type is not supported.",
+                        UpdaterWindow.status(
+                            "Selected folder is empty or loader type is not supported.",
                             Color.RED
                         )
-                        throw RuntimeException("Mods folder is empty or loader type is not supported")
+                        throw RuntimeException("Selected folder is empty or loader type is not supported")
                     }
                 }
             }

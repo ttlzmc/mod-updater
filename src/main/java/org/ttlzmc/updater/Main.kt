@@ -16,10 +16,13 @@ import javafx.stage.DirectoryChooser
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 import org.ttlzmc.core.ModFinder
+import org.ttlzmc.core.mod.Loader
+import org.ttlzmc.core.mod.ModInfo
 import org.ttlzmc.hwd.DwmAttribute
 import org.ttlzmc.hwd.HwndLookupException
 import org.ttlzmc.hwd.WindowHandle
 import org.ttlzmc.minecraft.MinecraftVersion
+import org.ttlzmc.utils.FontBuilder
 import org.ttlzmc.utils.TextBuilder
 import java.io.File
 
@@ -47,7 +50,7 @@ class UpdaterWindow : Application() {
 
     private lateinit var primaryStage: Stage
     private lateinit var selectedMinecraftVersion: MinecraftVersion
-    private lateinit var foundMods: List<Mod>
+    private lateinit var foundMods: List<ModInfo>
 
     private lateinit var info: Text
     private lateinit var infoSub: Text
@@ -96,7 +99,7 @@ class UpdaterWindow : Application() {
                 val selectedDirectory = dirChooser.showDialog(primaryStage)
                 if (selectedDirectory != null && selectedDirectory.isDirectory) {
                     path.text = selectedDirectory.absolutePath
-                    this@UpdaterWindow.foundMods = ModFinder.onFileChosen(selectedDirectory)
+                    this@UpdaterWindow.foundMods = ModFinder.findMods(selectedDirectory)
                 }
             }
         }
@@ -106,8 +109,11 @@ class UpdaterWindow : Application() {
 
             setOnMouseClicked {
                 if (ModFinder.modsFolderFound) {
-                    primaryStage.scene = Scene(ResultPage.init()).apply {
+                    primaryStage.scene = Scene(ResultPage.init(
+                        Loader.FABRIC, foundMods, selectedMinecraftVersion
+                    )).apply {
                         stylesheets.add("fluent-light.css")
+                        fill = Color.TRANSPARENT
                     }
                     primaryStage.sizeToScene()
                 } else {
@@ -190,11 +196,13 @@ class UpdaterWindow : Application() {
     }
 
     companion object {
-        private val statusField = Text("")
+        private val statusField = Text("").apply {
+            font = FontBuilder.sizeOf(12)
+        }
 
         fun status(string: String, fill: Color) {
-            statusField.text = string
-            statusField.fill = fill
+            statusField.textProperty().set(string)
+            statusField.fillProperty().set(fill)
         }
     }
 }
