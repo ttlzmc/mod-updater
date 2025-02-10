@@ -149,6 +149,7 @@ class UpdaterWindow : Application() {
             })
         }
         selectedMinecraftVersion = MinecraftVersion.entries.first()
+        selectedVersion.text = selectedMinecraftVersion.string
 
         contextMenu.apply {
             this.items.addAll(items)
