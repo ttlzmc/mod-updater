@@ -21,7 +21,7 @@ import org.ttlzmc.core.mod.ModInfo
 import org.ttlzmc.hwd.DwmAttribute
 import org.ttlzmc.hwd.HwndLookupException
 import org.ttlzmc.hwd.WindowHandle
-import org.ttlzmc.minecraft.MinecraftVersions
+import org.ttlzmc.core.MinecraftVersions
 import org.ttlzmc.utils.FontBuilder
 import org.ttlzmc.utils.TextBuilder
 import java.io.File

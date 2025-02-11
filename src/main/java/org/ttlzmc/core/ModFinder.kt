@@ -5,7 +5,6 @@ import org.json.JSONObject
 import org.ttlzmc.core.mod.Loader
 import org.ttlzmc.core.mod.ModInfo
 import org.ttlzmc.app.UpdaterWindow
-import org.ttlzmc.minecraft.MinecraftVersions
 import java.io.File
 import java.util.jar.JarFile
 

@@ -10,12 +10,12 @@ import java.net.URL
  */
 object ModrinthAPILinksProvider {
 
-    fun getProject(modName: String): URL {
-        return URI.create("https://api.modrinth.com/v2/project/${slug(modName)}").toURL()
+    fun getProject(mod: ModInfo): URL {
+        return URI.create("https://api.modrinth.com/v2/project/${mod.modId}").toURL()
     }
 
-    fun getProjects(vararg modName: String): List<URL> {
-        return modName.map { getProject(it) }
+    fun getProjects(vararg mods: ModInfo): List<URL> {
+        return mods.map { getProject(it) }
     }
 
     fun getProjectIcon(mod: ModInfo): URL {
@@ -23,7 +23,7 @@ object ModrinthAPILinksProvider {
     }
 
     fun listProjectVersions(mod: ModInfo): URL {
-        return URI.create("https://api.modrinth.com/v2/project/${slug(mod.name)}/version").toURL()
+        return URI.create("https://api.modrinth.com/v2/project/${slug(mod.modId)}/version").toURL()
     }
 
     fun getProjectVersion(base62version: String): URL {

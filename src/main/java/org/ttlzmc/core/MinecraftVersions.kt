@@ -1,4 +1,4 @@
-package org.ttlzmc.minecraft
+package org.ttlzmc.core
 
 import org.json.JSONArray
 import org.json.JSONTokener

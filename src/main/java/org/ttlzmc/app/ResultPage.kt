@@ -2,16 +2,18 @@ package org.ttlzmc.app
 
 import javafx.geometry.Insets
 import javafx.geometry.Pos
-import javafx.scene.control.ContextMenu
+import javafx.scene.control.Label
 import javafx.scene.control.ScrollPane
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.text.Text
 import org.ttlzmc.core.ModFinder
+import org.ttlzmc.core.api.ModrinthAPIProvider
+import org.ttlzmc.core.api.ModrinthMod
 import org.ttlzmc.core.mod.Loader
 import org.ttlzmc.core.mod.ModInfo
-import org.ttlzmc.minecraft.MinecraftVersions
+import org.ttlzmc.core.MinecraftVersions
 import org.ttlzmc.utils.TextBuilder
 
 object ResultPage {
@@ -44,12 +46,19 @@ object ResultPage {
         this.minecraftVersion = version
 
         this.initComponents()
+        this.generateModsList()
 
         return root
     }
 
-    private fun initComponents() {
+    private fun generateModsList() {
+        val projects = foundMods.map { ModrinthAPIProvider.getProject(it) }
+        val views = projects.map { this.createModView(it) }
+        val container = VBox(10.0).apply { children.addAll(views) }
+        this.modsList.content = container
+    }
 
+    private fun initComponents() {
         title = TextBuilder.newBuilder("Now, let's see what we got:")
             .withFontSize(25)
             .build()
@@ -90,5 +99,14 @@ object ResultPage {
                 modsList.maxHeight = (newValue as Double / 10) * 7.2
             }
         }
+    }
+
+    private fun createModView(mod: ModrinthMod): VBox {
+        val wrapper = VBox(5.0)
+        val view = mod.imageView
+        val name = Label(mod.name)
+        val desc = Label(mod.description)
+        wrapper.children.addAll(view, name, desc)
+        return wrapper
     }
 }

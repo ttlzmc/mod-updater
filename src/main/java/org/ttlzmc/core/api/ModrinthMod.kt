@@ -24,7 +24,7 @@ class ModrinthMod(apiResponse: JSONObject, private val info: ModInfo) {
     }
 
     /**
-     * Downloads this project at latest version
+     * Downloads this project's latest version
      */
     fun download(): File {
         return ModrinthAPIProvider.downloadProject(this)
