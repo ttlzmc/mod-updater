@@ -85,11 +85,13 @@ object ModFinder {
     private fun extractQuiltModInfo(jar: JarFile): ModInfo {
         val entry = jar.getInputStream(jar.getEntry("quilt.mod.json")).bufferedReader()
         val json = JSONObject(entry.readText())
+        val modInfo = json.getJSONObject("quilt_loader")
+        val meta = modInfo.getJSONObject("metadata")
         return ModInfo(
-            modId = json.getString("id"),
-            name = json.getString("name"),
-            description = json.getString("description"),
-            version = json.getString("version"),
+            modId = modInfo.getString("id"),
+            name = meta.getString("name"),
+            description = meta.getString("description"),
+            version = modInfo.getString("version"),
             loader = Loader.QUILT
         )
     }

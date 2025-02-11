@@ -8,9 +8,8 @@ import java.net.HttpURLConnection
 
 object ModrinthAPIProvider {
 
-    fun getProject(mod: ModInfo, to: File): File {
-        val json = getProjectRaw(mod)
-        return File("")
+    fun getProject(info: ModInfo, to: File): ModrinthMod {
+        val json = getProjectRaw(info)
     }
 
     fun getProjectRaw(mod: ModInfo): JSONObject {
