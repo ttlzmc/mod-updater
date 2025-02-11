@@ -6,10 +6,14 @@ import org.ttlzmc.core.mod.ModInfo
 import java.io.File
 import java.net.HttpURLConnection
 
+/**
+ * An object that provides data using Modrinth API.
+ * @see ModrinthAPILinksProvider
+ */
 object ModrinthAPIProvider {
 
-    fun getProject(info: ModInfo, to: File): ModrinthMod {
-        val json = getProjectRaw(info)
+    fun getProject(info: ModInfo): ModrinthMod {
+        return ModrinthMod(getProjectRaw(info), info)
     }
 
     fun getProjectRaw(mod: ModInfo): JSONObject {
