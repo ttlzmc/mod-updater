@@ -8,6 +8,7 @@ import javafx.scene.layout.BorderPane
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.text.Text
+import org.ttlzmc.core.ModFinder
 import org.ttlzmc.core.mod.Loader
 import org.ttlzmc.core.mod.ModInfo
 import org.ttlzmc.minecraft.MinecraftVersions
@@ -35,6 +36,9 @@ object ResultPage {
     private val modsList: ScrollPane = ScrollPane()
 
     fun init(loader: Loader, foundMods: List<ModInfo>, version: MinecraftVersions.MinecraftVersion): BorderPane {
+        ModFinder.foundMainLoader = loader
+        ModFinder.selectedMinecraftVersion = version
+
         this.loader = loader
         this.foundMods = foundMods
         this.minecraftVersion = version

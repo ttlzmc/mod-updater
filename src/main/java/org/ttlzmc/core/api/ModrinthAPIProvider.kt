@@ -4,6 +4,7 @@ import javafx.scene.image.Image
 import org.json.JSONArray
 import org.json.JSONObject
 import org.json.JSONTokener
+import org.ttlzmc.core.ModFinder
 import org.ttlzmc.core.mod.ModInfo
 import java.io.File
 import java.net.HttpURLConnection
@@ -69,6 +70,8 @@ object ModrinthAPIProvider {
         val url = ModrinthAPILinksProvider.listProjectVersions(mod)
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "GET"
+        connection.addRequestProperty("loaders", ModFinder.foundMainLoader.key)
+        connection.addRequestProperty("game_versions", ModFinder.selectedMinecraftVersion.value)
         connection.connectTimeout = 6000
         connection.readTimeout = 6000
         connection.connect()
