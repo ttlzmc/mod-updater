@@ -11,7 +11,7 @@ import java.net.URL
 object ModrinthAPILinksProvider {
 
     fun getProject(mod: ModInfo): URL {
-        return URI.create("https://api.modrinth.com/v2/project/${mod.modId}").toURL()
+        return URI.create("https://api.modrinth.com/v2/project/${slug(mod.modId)}").toURL()
     }
 
     fun getProjects(vararg mods: ModInfo): List<URL> {
