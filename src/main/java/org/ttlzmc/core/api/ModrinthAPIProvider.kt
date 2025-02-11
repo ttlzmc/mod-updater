@@ -23,7 +23,7 @@ object ModrinthAPIProvider {
     }
 
     fun getProjectRaw(mod: ModInfo): JSONObject {
-        val url = ModrinthAPILinksProvider.getProject(mod.name)
+        val url = ModrinthAPILinksProvider.getProject(mod)
         debugLogger.info("""
             Entrypoint: GetProject, #getProjectRaw
             URL: ${url.toExternalForm()}
