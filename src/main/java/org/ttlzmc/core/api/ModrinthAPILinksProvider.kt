@@ -1,5 +1,6 @@
 package org.ttlzmc.core.api
 
+import org.ttlzmc.core.SlugFinder
 import org.ttlzmc.core.mod.ModInfo
 import java.net.URI
 import java.net.URL
@@ -30,5 +31,8 @@ object ModrinthAPILinksProvider {
         return URI.create("https://api.modrinth.com/v2/version/$base62version").toURL()
     }
 
-    private fun slug(modName: String): String = modName.replace(" ", "-").lowercase()
+    private fun slug(modid: String): String {
+        return SlugFinder.slugIfPresent(modid.replace(" ", "-")
+            .replace("_", "-").lowercase())
+    }
 }
