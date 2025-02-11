@@ -1,6 +1,7 @@
 package org.ttlzmc.core.api
 
 import org.json.JSONObject
+import java.net.URI
 
 class ModVersion(apiResponse: JSONObject) {
     val base62version = apiResponse.getString("id")
@@ -8,6 +9,6 @@ class ModVersion(apiResponse: JSONObject) {
 
     val projectId = apiResponse.getString("project_id")
 
-    val dowloadLink = apiResponse.getJSONArray("files")
-        .getJSONObject(0).getString("url")
+    val dowloadLink = URI.create(apiResponse.getJSONArray("files")
+        .getJSONObject(0).getString("url")).toURL()
 }

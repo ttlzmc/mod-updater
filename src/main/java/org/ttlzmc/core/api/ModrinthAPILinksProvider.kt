@@ -30,5 +30,5 @@ object ModrinthAPILinksProvider {
         return URI.create("https://api.modrinth.com/v2/version/$base62version").toURL()
     }
 
-    fun slug(modName: String): String = modName.replace(" ", "-").lowercase()
+    private fun slug(modName: String): String = modName.replace(" ", "-").lowercase()
 }
