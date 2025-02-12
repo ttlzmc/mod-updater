@@ -15,6 +15,7 @@ import org.ttlzmc.core.mod.Loader
 import org.ttlzmc.core.mod.ModInfo
 import org.ttlzmc.core.MinecraftVersions
 import org.ttlzmc.utils.TextBuilder
+import java.util.concurrent.CompletableFuture
 
 object ResultPage {
 
@@ -51,7 +52,7 @@ object ResultPage {
         return root
     }
 
-    private fun generateModsList() {
+    private fun generateModsList() = CompletableFuture.runAsync {
         val projects = foundMods.map { ModrinthAPIProvider.getProject(it) }
         val views = projects.map { this.createModView(it) }
         val container = VBox(10.0).apply { children.addAll(views) }
