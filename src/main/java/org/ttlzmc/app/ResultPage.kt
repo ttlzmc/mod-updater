@@ -1,5 +1,6 @@
 package org.ttlzmc.app
 
+import javafx.application.Platform
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.Label
@@ -53,9 +54,18 @@ object ResultPage {
     }
 
     private fun generateModsList() = CompletableFuture.runAsync {
-        val projects = foundMods.map { ModrinthAPIProvider.getProject(it) }
-        val views = projects.map { this.createModView(it) }
-        val container = VBox(10.0).apply { children.addAll(views) }
+        val container = VBox(10.0)
+        foundMods.map { modId ->
+            CompletableFuture.supplyAsync {
+                ModrinthAPIProvider.getProject(modId)
+            }.thenApply { mod ->
+                createModView(mod)
+            }.thenAccept { modView ->
+                Platform.runLater {
+                    container.children.add(modView)
+                }
+            }
+        }
         this.modsList.content = container
     }
 
