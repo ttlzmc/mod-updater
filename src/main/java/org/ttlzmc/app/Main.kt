@@ -76,6 +76,10 @@ class UpdaterWindow : Application() {
     }
 
     private fun initComponents() {
+        selectedMinecraftVersion = MinecraftVersions.entries().first()
+        ModFinder.selectedMinecraftVersion = selectedMinecraftVersion
+        selectedVersion.text = selectedMinecraftVersion.value
+
         info = TextBuilder.newBuilder()
             .withText("Select your mods")
             .withFontSize(20)
@@ -90,6 +94,22 @@ class UpdaterWindow : Application() {
             isEditable = false
             prefWidth = 300.0
         }
+
+        val items = arrayListOf<MenuItem>()
+        for (version in MinecraftVersions.entries()) {
+            items.add(MenuItem(version.value).apply {
+                setOnAction {
+                    selectedVersion.text = version.value
+                    selectedMinecraftVersion = version
+                    ModFinder.selectedMinecraftVersion = version
+                }
+            })
+        }
+
+        contextMenu.apply {
+            this.items.addAll(items)
+        }
+
         selectFolder.apply {
             prefWidth = 20.0
             prefHeight = 20.0
@@ -105,6 +125,7 @@ class UpdaterWindow : Application() {
                 }
             }
         }
+
         proceed.apply {
             prefWidth = 100.0
             prefHeight = 5.0
@@ -134,27 +155,13 @@ class UpdaterWindow : Application() {
             prefWidth = 120.0
             prefHeight = 5.0
         }
+
         selectVersionButton.apply {
             prefWidth = 20.0
             prefHeight = 5.0
             setOnMouseClicked {
                 openContextMenu()
             }
-        }
-
-        val items = arrayListOf<MenuItem>()
-        for (version in MinecraftVersions.entries()) {
-            items.add(MenuItem(version.value).apply {
-                setOnAction {
-                    selectedVersion.text = version.value
-                }
-            })
-        }
-        selectedMinecraftVersion = MinecraftVersions.entries().first()
-        selectedVersion.text = selectedMinecraftVersion.value
-
-        contextMenu.apply {
-            this.items.addAll(items)
         }
 
         rootScene.apply {

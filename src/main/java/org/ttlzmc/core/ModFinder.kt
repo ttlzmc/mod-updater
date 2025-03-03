@@ -5,7 +5,6 @@ import javafx.scene.paint.Color
 import org.ttlzmc.core.mod.Loader
 import org.ttlzmc.core.mod.ModInfo
 import org.ttlzmc.app.UpdaterWindow
-import org.ttlzmc.utils.getString
 import org.ttlzmc.utils.getStringOrElse
 import java.io.File
 import java.util.jar.JarFile
@@ -54,15 +53,15 @@ object ModFinder {
             JarFile(jar).use { mod ->
                 when {
                     mod.getEntry("fabric.mod.json") != null -> {
-                        val modInfo = extractFabricModInfo(mod)
+                        val modInfo = extractFabricModInfo(mod, jar)
                         mods.add(modInfo)
                     }
                     mod.getEntry("quilt.mod.json") != null -> {
-                        val modInfo = extractQuiltModInfo(mod)
+                        val modInfo = extractQuiltModInfo(mod, jar)
                         mods.add(modInfo)
                     }
                     mod.getEntry("META-INF/mods.toml") != null -> {
-                        val modInfo = extractForgeModInfo(mod)
+                        val modInfo = extractForgeModInfo(mod, jar)
                         mods.add(modInfo)
                     }
 
@@ -79,46 +78,44 @@ object ModFinder {
         return mods
     }
 
-    private fun extractFabricModInfo(jar: JarFile): ModInfo {
+    private fun extractFabricModInfo(jar: JarFile, original: File): ModInfo {
         val entry = jar.getInputStream(jar.getEntry("fabric.mod.json")).bufferedReader()
         val json = JsonParser.parseString(entry.readText()).asJsonObject
         debugLogger.info("New fabric.mod.json found in ${jar.name}")
         return ModInfo(
-            modId = json.getString("id"),
             name = json.getStringOrElse("name") { "unnamed_${jar.name}" },
             description = json.getStringOrElse("description") { "No description provided" },
-            version = json.getString("version"),
-            loader = Loader.FABRIC
+            minecraftVersion = selectedMinecraftVersion.value,
+            loader = Loader.FABRIC,
+            jarFile = original
         )
     }
 
-    private fun extractQuiltModInfo(jar: JarFile): ModInfo {
+    private fun extractQuiltModInfo(jar: JarFile, original: File): ModInfo {
         val entry = jar.getInputStream(jar.getEntry("quilt.mod.json")).bufferedReader()
         val json = JsonParser.parseString(entry.readText()).asJsonObject
         debugLogger.info("New quilt.mod.json found in ${jar.name}")
         val modInfo = json.get("quilt_loader").asJsonObject
         val meta = modInfo.get("metadata").asJsonObject
         return ModInfo(
-            modId = modInfo.get("id").asString,
-            name = meta.getString("name"),
-            description = meta.getString("description"),
-            version = modInfo.get("version").asString,
-            loader = Loader.QUILT
+            name = meta.getStringOrElse("name") { "unnamed_${jar.name}" },
+            description = meta.getStringOrElse("description") { "No description provided" },
+            minecraftVersion = selectedMinecraftVersion.value,
+            loader = Loader.QUILT,
+            jarFile = original
         )
     }
 
-    private fun extractForgeModInfo(jar: JarFile): ModInfo {
+    private fun extractForgeModInfo(jar: JarFile, original: File): ModInfo {
         val entry = jar.getInputStream(jar.getEntry("META-INF/mods.toml")).bufferedReader().use { reader ->
             reader.readLines().joinToString("\n")
         }
         debugLogger.info("New mods.toml found in ${jar.name}")
         val lines = entry.split("\n")
-        val modId = lines.find { it.startsWith("modId =") }?.substringAfter("= ")?.trim('"') ?: "unknown"
         val name = lines.find { it.startsWith("displayName =") }?.substringAfter("= ")?.trim('"') ?: "unknown"
         val description = lines.find { it.startsWith("description =") }?.substringAfter("= ")?.trim('"') ?: "unknown"
-        val version = lines.find { it.startsWith("version =") }?.substringAfter("= ")?.trim('"') ?: "unknown"
         val loader = Loader.FORGE
 
-        return ModInfo(modId, name, description, version, loader)
+        return ModInfo(name, description, selectedMinecraftVersion.value, loader, original)
     }
 }

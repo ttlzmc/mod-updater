@@ -1,7 +1,6 @@
 package org.ttlzmc.core
 
 import com.google.gson.JsonParser
-import java.io.InputStreamReader
 import java.util.LinkedList
 
 object MinecraftVersions {

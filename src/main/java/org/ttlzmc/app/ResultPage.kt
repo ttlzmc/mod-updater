@@ -3,21 +3,19 @@ package org.ttlzmc.app
 import javafx.application.Platform
 import javafx.geometry.Insets
 import javafx.geometry.Pos
-import javafx.scene.control.Label
 import javafx.scene.control.ScrollPane
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.text.Text
 import org.ttlzmc.core.ModFinder
-import org.ttlzmc.core.api.ModrinthAPIProvider
-import org.ttlzmc.core.api.ModrinthMod
+import org.ttlzmc.core.mod.ModrinthMod
 import org.ttlzmc.core.mod.Loader
 import org.ttlzmc.core.mod.ModInfo
 import org.ttlzmc.core.MinecraftVersions
+import org.ttlzmc.core.api.LabrinthAPIProvider
 import org.ttlzmc.utils.TextBuilder
 import java.util.concurrent.CompletableFuture
-import java.util.logging.Logger
 
 object ResultPage {
 
@@ -58,7 +56,7 @@ object ResultPage {
         val container = VBox(10.0)
         this.modsList.content = container
         foundMods.map { info ->
-            CompletableFuture.supplyAsync { ModrinthAPIProvider.getProject(info) }
+            CompletableFuture.supplyAsync { LabrinthAPIProvider.getProject(info) }
                 .thenApply { mod -> createModView(mod) }
                 .thenAccept { view -> Platform.runLater {
                     container.children.add(view)

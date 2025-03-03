@@ -4,6 +4,7 @@ enum class Loader(val key: String) {
     FABRIC("fabric"),
     QUILT("quilt"),
     FORGE("forge"),
-    NEOFORGE("neoforge") //TODO: add to ModFinder
+    NEOFORGE("neoforge")
+    //TODO: Add NeoForge to ModFinder
     ;
 }
