@@ -7,6 +7,7 @@ import org.ttlzmc.core.mod.ModInfo
 import org.ttlzmc.core.mod.ModVersion
 import org.ttlzmc.core.mod.ModrinthMod
 import java.io.File
+import java.io.FileNotFoundException
 import java.net.HttpURLConnection
 import java.net.URI
 import java.security.MessageDigest
@@ -19,7 +20,6 @@ import java.util.logging.Logger
  */
 object LabrinthAPIProvider {
 
-    private val sha512 = MessageDigest.getInstance("SHA-512")
     private val debugLogger = Logger.getLogger("LabrinthAPIProvider")
 
     /**
@@ -45,8 +45,8 @@ object LabrinthAPIProvider {
         val connection = (url.openConnection() as HttpURLConnection).apply {
             setRequestProperty("Accept", "application/json")
             requestMethod = "GET"
-            connectTimeout = 6000
-            readTimeout = 6000
+            connectTimeout = 10000
+            readTimeout = 10000
         }.also { it.connect() }
         if (connection.responseCode in 200..299) {
             this.debugLogger.info("Mod found successfully: ${url.toExternalForm()}")
@@ -66,8 +66,8 @@ object LabrinthAPIProvider {
             setRequestProperty("algorithm", "sha512")
             setRequestProperty("Accept", "application/json")
             requestMethod = "GET"
-            connectTimeout = 6000
-            readTimeout = 6000
+            connectTimeout = 10000
+            readTimeout = 10000
         }.also { it.connect() }
         if (connection.responseCode in 200..299) {
             this.debugLogger.info("Mod version found successfully: ${url.toExternalForm()}")
@@ -105,7 +105,20 @@ object LabrinthAPIProvider {
     }
 
     private fun hashSHA512(file: File): String {
-        return sha512.digest(file.readBytes()).joinToString("") { "%02x".format(it) }
+        if (!file.exists() || !file.canRead()) {
+            debugLogger.info("Cannot hash file ${file.absolutePath} because it doesn't exist or unable to be read.")
+            throw FileNotFoundException()
+        }
+
+        return try {
+            val digest = MessageDigest.getInstance("SHA-512")
+            val fileBytes = file.readBytes()
+            val hashBytes = digest.digest(fileBytes)
+            hashBytes.joinToString("") { String.format("%02x", it) }
+        } catch (e: Exception) {
+            debugLogger.info("Error while hashing file ${file.absolutePath}, ${e.message}")
+            throw FileNotFoundException(e.message)
+        }
     }
 
 }

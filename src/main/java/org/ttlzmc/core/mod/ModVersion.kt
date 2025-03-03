@@ -15,7 +15,7 @@ class ModVersion(apiResponse: JsonObject) {
     val base62version = apiResponse.getString("id")
     val versionNumber = apiResponse.getString("version_number")
 
-    val minecraftVersions: List<MinecraftVersion> = apiResponse.getAsJsonArray("minecraft_version").map { MinecraftVersion(it.asString) }
+    val minecraftVersions: List<MinecraftVersion> = apiResponse.getAsJsonArray("game_versions").map { MinecraftVersion(it.asString) }
     val loaders: List<Loader> = apiResponse.getAsJsonArray("loaders").map { loader -> Loader.entries.first { it.name == loader.asString.uppercase() } }
 
     val downloadLink: URL = URI.create(apiResponse.get("files")

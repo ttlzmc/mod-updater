@@ -16,6 +16,7 @@ import org.ttlzmc.core.MinecraftVersions
 import org.ttlzmc.core.api.LabrinthAPIProvider
 import org.ttlzmc.utils.TextBuilder
 import java.util.concurrent.CompletableFuture
+import java.util.logging.Logger
 
 object ResultPage {
 
@@ -38,6 +39,8 @@ object ResultPage {
 
     private val modsList: ScrollPane = ScrollPane()
 
+    private var processedModsCount = 0
+
     fun init(loader: Loader, foundMods: List<ModInfo>, version: MinecraftVersions.MinecraftVersion): BorderPane {
         ModFinder.foundMainLoader = loader
         ModFinder.selectedMinecraftVersion = version
@@ -52,18 +55,15 @@ object ResultPage {
         return root
     }
 
-    private fun generateModsList() = CompletableFuture.runAsync {
+    private fun generateModsList() {
         val container = VBox(10.0)
         this.modsList.content = container
         foundMods.map { info ->
-            CompletableFuture.supplyAsync { LabrinthAPIProvider.getProject(info) }
-                .thenApply { mod -> createModView(mod) }
-                .thenAccept { view -> Platform.runLater {
-                    container.children.add(view)
-                } }
-                .handle { _, ex -> throw ex }.complete(null)
+            LabrinthAPIProvider.getProject(info).run {
+                container.children.add(createModView(this))
+            }
         }
-    }.handle {_, ex -> throw ex }.complete(null)
+    }
 
     private fun initComponents() {
         title = TextBuilder.newBuilder("Now, let's see what we got:")

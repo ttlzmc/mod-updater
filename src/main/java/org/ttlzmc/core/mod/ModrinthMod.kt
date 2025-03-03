@@ -18,10 +18,10 @@ class ModrinthMod(
 ) {
 
     val name: String = apiResponse.getString("title")
-    val id: String = apiResponse.getString("project_id")
+    val id: String = apiResponse.getString("id")
 
     val description: String = apiResponse.getString("description")
-    val icon: ImageView = UpdaterCache.loadIcon("${name}.png")
+    //val icon: ImageView = UpdaterCache.loadIcon("${name}.png")
 
     val downloadLink: URL = version.downloadLink
 
