@@ -9,6 +9,7 @@ import org.ttlzmc.core.UpdaterCache
 import org.ttlzmc.core.UpdaterCache.cacheFolder
 import org.ttlzmc.core.mod.ModInfo
 import org.ttlzmc.utils.getString
+import java.security.MessageDigest
 import java.util.logging.Logger
 
 /**
@@ -87,6 +88,10 @@ object ModrinthAPIProvider {
             return versions.map { ModVersion(it as JsonObject) }.toList()
         }
         throw ModrinthAPIResponseException("Error getting project versions for mod ${mod.name}")
+    }
+
+    private fun hashSHA512(file: File): String {
+        return MessageDigest.getInstance("SHA-512").digest(file.readBytes()).joinToString("") { "%02x".format(it) }
     }
 
 }

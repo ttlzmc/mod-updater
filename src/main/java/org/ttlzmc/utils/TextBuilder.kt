@@ -1,6 +1,7 @@
 package org.ttlzmc.utils
 
 import javafx.scene.paint.Color
+import javafx.scene.text.Font
 import javafx.scene.text.Text
 
 object TextBuilder {
@@ -9,8 +10,11 @@ object TextBuilder {
 
     fun newBuilder(text: String) = Builder(text)
 
+    private const val FONT_NAME = "Segoe UI Semibold"
+
     class Builder(text: String = "") {
 
+        private var size = 10.0
         private val temp = Text(text)
 
         fun withColor(color: Color): Builder {
@@ -23,13 +27,26 @@ object TextBuilder {
             return this
         }
 
+        fun withFont(name: String): Builder {
+            temp.font = Font.font(name, this.size)
+            return this
+        }
+
         fun withFontSize(size: Int): Builder {
-            temp.font = FontBuilder.sizeOf(size)
+            this.size = size.toDouble()
+            temp.font = Font.font(FONT_NAME, this.size)
             return this
         }
 
         fun withFontSize(float: Float): Builder {
-            temp.font = FontBuilder.sizeOf(float.toDouble())
+            this.size = float.toDouble()
+            temp.font = Font.font(FONT_NAME, this.size)
+            return this
+        }
+
+        fun withFontSize(size: Double): Builder {
+            this.size = size
+            temp.font = Font.font(FONT_NAME, this.size)
             return this
         }
 

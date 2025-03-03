@@ -23,7 +23,6 @@ import org.ttlzmc.hwd.HwndLookupException
 import org.ttlzmc.hwd.WindowHandle
 import org.ttlzmc.core.MinecraftVersions
 import org.ttlzmc.core.SlugFinder
-import org.ttlzmc.utils.FontBuilder
 import org.ttlzmc.utils.TextBuilder
 import java.io.File
 
@@ -200,9 +199,8 @@ class UpdaterWindow : Application() {
     }
 
     companion object {
-        private val statusField = Text("").apply {
-            font = FontBuilder.sizeOf(12)
-        }
+        private val statusField = TextBuilder.newBuilder("")
+            .withFontSize(12).build()
 
         fun status(string: String, fill: Color) {
             statusField.textProperty().set(string)
