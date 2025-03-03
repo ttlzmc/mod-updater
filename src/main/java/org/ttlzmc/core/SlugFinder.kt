@@ -1,7 +1,7 @@
 package org.ttlzmc.core
 
-import org.json.JSONObject
-import org.json.JSONTokener
+import com.google.gson.JsonParser
+import org.ttlzmc.utils.getString
 import java.net.HttpURLConnection
 import java.net.URI
 import java.util.logging.Logger
@@ -22,8 +22,8 @@ object SlugFinder {
         connection.connectTimeout = 5000
         connection.readTimeout = 5000
         connection.connect()
-        val json = JSONObject(JSONTokener(connection.inputStream.bufferedReader()))
-        for (key in json.keys()) {
+        val json = JsonParser.parseString(connection.inputStream.bufferedReader().readText()).asJsonObject
+        for (key in json.keySet()) {
             slugs[key] = json.getString(key)
         }
         Logger.getAnonymousLogger().info(slugs.toString())

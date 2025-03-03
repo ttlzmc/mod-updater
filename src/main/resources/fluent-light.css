@@ -421,7 +421,7 @@
     -fx-background-radius:4 4 4 4,4 4 4 4
 }
 
-. list-cell:filled:hover {
+.list-cell:filled:hover {
     -fx-background-color: -SubtleFillColorSecondaryBrush
 }
 

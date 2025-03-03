@@ -17,6 +17,7 @@ import org.ttlzmc.core.mod.ModInfo
 import org.ttlzmc.core.MinecraftVersions
 import org.ttlzmc.utils.TextBuilder
 import java.util.concurrent.CompletableFuture
+import java.util.logging.Logger
 
 object ResultPage {
 
@@ -55,19 +56,16 @@ object ResultPage {
 
     private fun generateModsList() = CompletableFuture.runAsync {
         val container = VBox(10.0)
-        foundMods.map { modId ->
-            CompletableFuture.supplyAsync {
-                ModrinthAPIProvider.getProject(modId)
-            }.thenApply { mod ->
-                createModView(mod)
-            }.thenAccept { modView ->
-                Platform.runLater {
-                    container.children.add(modView)
-                }
-            }
-        }
         this.modsList.content = container
-    }
+        foundMods.map { info ->
+            CompletableFuture.supplyAsync { ModrinthAPIProvider.getProject(info) }
+                .thenApply { mod -> createModView(mod) }
+                .thenAccept { view -> Platform.runLater {
+                    container.children.add(view)
+                } }
+                .handle { _, ex -> throw ex }.complete(null)
+        }
+    }.handle {_, ex -> throw ex }.complete(null)
 
     private fun initComponents() {
         title = TextBuilder.newBuilder("Now, let's see what we got:")
@@ -88,6 +86,8 @@ object ResultPage {
             maxHeight = 800.0
             prefHeight = 600.0
             layoutX = root.width / 2
+            hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
+            vbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
         }
 
         holder = VBox().apply {
@@ -114,10 +114,9 @@ object ResultPage {
 
     private fun createModView(mod: ModrinthMod): VBox {
         val wrapper = VBox(5.0)
-        val view = mod.imageView
-        val name = Label(mod.name)
-        val desc = Label(mod.description)
-        wrapper.children.addAll(view, name, desc)
+        val name = Text(mod.name)
+        val desc = Text(mod.description)
+        wrapper.children.addAll(name, desc)
         return wrapper
     }
 }

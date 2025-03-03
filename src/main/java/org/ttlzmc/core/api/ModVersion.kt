@@ -1,14 +1,14 @@
 package org.ttlzmc.core.api
 
-import org.json.JSONObject
+import com.google.gson.JsonObject
 import java.net.URI
 
-class ModVersion(apiResponse: JSONObject) {
-    val base62version = apiResponse.getString("id")
-    val versionNumber = apiResponse.getString("version_number")
+class ModVersion(apiResponse: JsonObject) {
+    val base62version = apiResponse.get("id").asString
+    val versionNumber = apiResponse.get("version_number").asString
 
-    val projectId = apiResponse.getString("project_id")
+    val projectId = apiResponse.get("project_id").asString
 
-    val dowloadLink = URI.create(apiResponse.getJSONArray("files")
-        .getJSONObject(0).getString("url")).toURL()
+    val dowloadLink = URI.create(apiResponse.get("files")
+        .asJsonArray.get(0).asJsonObject.get("url").asString).toURL()
 }

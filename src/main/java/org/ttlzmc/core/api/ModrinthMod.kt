@@ -1,21 +1,22 @@
 package org.ttlzmc.core.api
 
+import com.google.gson.JsonObject
 import java.io.File
 import javafx.scene.image.ImageView
-import org.json.JSONObject
+import org.ttlzmc.core.UpdaterCache
 import org.ttlzmc.core.mod.ModInfo
 
 /**
  * A simple wrapper for `api.modrinth.com`'s response
  */
-class ModrinthMod(apiResponse: JSONObject, private val info: ModInfo) {
-    val name = apiResponse.getString("title")
-    val modrinthId = apiResponse.getString("id")
-    val slug = apiResponse.getString("slug")
+class ModrinthMod(apiResponse: JsonObject, private val info: ModInfo) {
+    val name = apiResponse.get("title").asString
+    val modrinthId = apiResponse.get("id").asString
+    val slug = apiResponse.get("slug").asString
 
-    val description = apiResponse.getString("description")
+    val description = apiResponse.get("description").asString
 
-    val imageView: ImageView = ImageView(ModrinthAPIProvider.getProjectIcon(info))
+    val imageView: ImageView = UpdaterCache.loadIcon("${name}.png")
 
     lateinit var latestVersion: ModVersion
 

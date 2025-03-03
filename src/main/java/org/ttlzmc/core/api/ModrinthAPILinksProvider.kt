@@ -1,7 +1,9 @@
 package org.ttlzmc.core.api
 
+import com.google.gson.JsonObject
 import org.ttlzmc.core.SlugFinder
 import org.ttlzmc.core.mod.ModInfo
+import org.ttlzmc.utils.getString
 import java.net.URI
 import java.net.URL
 
@@ -15,12 +17,8 @@ object ModrinthAPILinksProvider {
         return URI.create("https://api.modrinth.com/v2/project/${slug(mod.modId)}").toURL()
     }
 
-    fun getProjects(vararg mods: ModInfo): List<URL> {
-        return mods.map { getProject(it) }
-    }
-
-    fun getProjectIcon(mod: ModInfo): URL {
-        return URI.create(ModrinthAPIProvider.getProjectRaw(mod).getString("icon_url")).toURL()
+    fun getProjectIcon(apiResponse: JsonObject): URL {
+        return URI.create(apiResponse.getString("icon_url")).toURL()
     }
 
     fun listProjectVersions(mod: ModInfo): URL {
@@ -31,8 +29,8 @@ object ModrinthAPILinksProvider {
         return URI.create("https://api.modrinth.com/v2/version/$base62version").toURL()
     }
 
-    private fun slug(modid: String): String {
-        return SlugFinder.slugIfPresent(modid.replace(" ", "-")
+    private fun slug(modId: String): String {
+        return SlugFinder.slugIfPresent(modId.replace(" ", "-")
             .replace("_", "-").lowercase())
     }
 }

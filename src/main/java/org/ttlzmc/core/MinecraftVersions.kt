@@ -1,16 +1,16 @@
 package org.ttlzmc.core
 
-import org.json.JSONArray
-import org.json.JSONTokener
+import com.google.gson.JsonParser
+import java.io.InputStreamReader
 import java.util.LinkedList
 
 object MinecraftVersions {
 
-    private val versionsJSON = JSONArray(JSONTokener(this.javaClass.getResourceAsStream("/versions.json")))
+    private val versionsJSON = JsonParser.parseString(javaClass.classLoader.getResourceAsStream("versions.json").bufferedReader().readText()).asJsonArray
     private val versions: LinkedList<MinecraftVersion> = LinkedList()
 
     fun load() {
-        versionsJSON.forEach { versions.add(MinecraftVersion(it as String)) }
+        versionsJSON.forEach { versions.add(MinecraftVersion(it.asString)) }
     }
 
     fun entries() = versions

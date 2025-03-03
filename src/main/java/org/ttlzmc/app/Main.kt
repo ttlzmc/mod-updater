@@ -78,7 +78,7 @@ class UpdaterWindow : Application() {
 
     private fun initComponents() {
         info = TextBuilder.newBuilder()
-            .withText("Let's start from here")
+            .withText("Select your mods")
             .withFontSize(20)
             .build()
 
@@ -115,7 +115,7 @@ class UpdaterWindow : Application() {
                     primaryStage.scene = Scene(ResultPage.init(
                         Loader.FABRIC, foundMods, selectedMinecraftVersion
                     )).apply {
-                        stylesheets.add("fluent-light.css")
+                        stylesheets.add("fluent-dark.css")
                         fill = Color.TRANSPARENT
                     }
                     primaryStage.sizeToScene()
@@ -159,7 +159,7 @@ class UpdaterWindow : Application() {
         }
 
         rootScene.apply {
-            stylesheets.add("fluent-light.css")
+            stylesheets.add("fluent-dark.css")
             fill = Color.TRANSPARENT
 
             heightProperty().addListener { _, _, newValue ->

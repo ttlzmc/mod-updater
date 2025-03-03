@@ -1,16 +1,21 @@
 package org.ttlzmc.core
 
+import com.google.gson.JsonParser
 import javafx.scene.paint.Color
-import org.json.JSONObject
 import org.ttlzmc.core.mod.Loader
 import org.ttlzmc.core.mod.ModInfo
 import org.ttlzmc.app.UpdaterWindow
+import org.ttlzmc.utils.getString
+import org.ttlzmc.utils.getStringOrElse
 import java.io.File
 import java.util.jar.JarFile
+import java.util.logging.Logger
 
 object ModFinder {
 
     var modsFolderFound: Boolean = false
+
+    private val debugLogger = Logger.getLogger(SlugFinder::class.java.name)
 
     lateinit var foundMainLoader: Loader
     lateinit var selectedMinecraftVersion: MinecraftVersions.MinecraftVersion
@@ -18,6 +23,7 @@ object ModFinder {
     fun findMods(folder: File): List<ModInfo> {
         modsFolderFound = true
         val mods = findModInfo(folder)
+        debugLogger.info("Total entries: ${mods.size}")
         if (mods.isEmpty()) {
             UpdaterWindow.status(
                 "It seems like your mods folder is empty! Are you sure?",
@@ -75,11 +81,12 @@ object ModFinder {
 
     private fun extractFabricModInfo(jar: JarFile): ModInfo {
         val entry = jar.getInputStream(jar.getEntry("fabric.mod.json")).bufferedReader()
-        val json = JSONObject(entry.readText())
+        val json = JsonParser.parseString(entry.readText()).asJsonObject
+        debugLogger.info("New fabric.mod.json found in ${jar.name}")
         return ModInfo(
             modId = json.getString("id"),
-            name = json.getString("name"),
-            description = json.getString("description"),
+            name = json.getStringOrElse("name") { "unnamed_${jar.name}" },
+            description = json.getStringOrElse("description") { "No description provided" },
             version = json.getString("version"),
             loader = Loader.FABRIC
         )
@@ -87,14 +94,15 @@ object ModFinder {
 
     private fun extractQuiltModInfo(jar: JarFile): ModInfo {
         val entry = jar.getInputStream(jar.getEntry("quilt.mod.json")).bufferedReader()
-        val json = JSONObject(entry.readText())
-        val modInfo = json.getJSONObject("quilt_loader")
-        val meta = modInfo.getJSONObject("metadata")
+        val json = JsonParser.parseString(entry.readText()).asJsonObject
+        debugLogger.info("New quilt.mod.json found in ${jar.name}")
+        val modInfo = json.get("quilt_loader").asJsonObject
+        val meta = modInfo.get("metadata").asJsonObject
         return ModInfo(
-            modId = modInfo.getString("id"),
+            modId = modInfo.get("id").asString,
             name = meta.getString("name"),
             description = meta.getString("description"),
-            version = modInfo.getString("version"),
+            version = modInfo.get("version").asString,
             loader = Loader.QUILT
         )
     }
@@ -103,7 +111,7 @@ object ModFinder {
         val entry = jar.getInputStream(jar.getEntry("META-INF/mods.toml")).bufferedReader().use { reader ->
             reader.readLines().joinToString("\n")
         }
-
+        debugLogger.info("New mods.toml found in ${jar.name}")
         val lines = entry.split("\n")
         val modId = lines.find { it.startsWith("modId =") }?.substringAfter("= ")?.trim('"') ?: "unknown"
         val name = lines.find { it.startsWith("displayName =") }?.substringAfter("= ")?.trim('"') ?: "unknown"

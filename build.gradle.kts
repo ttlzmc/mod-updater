@@ -14,6 +14,7 @@ val javafxVersion = "17.0.11"
 repositories {
     mavenCentral()
     maven("https://jitpack.io/")
+    maven("https://releases.groupdocs.com/java/repo/")
 }
 
 tasks.withType<JavaCompile> {
@@ -34,7 +35,9 @@ dependencies {
     implementation("org.openjfx:javafx-base:$javafxVersion")
     implementation("org.openjfx:javafx-controls:$javafxVersion")
     implementation("org.openjfx:javafx-graphics:$javafxVersion")
+    implementation("org.slf4j:slf4j-api:2.0.9")
     implementation("net.java.dev.jna:jna:5.13.0")
     implementation("net.java.dev.jna:jna-platform:5.13.0")
-    implementation("org.json:json:20240303")
+    implementation("com.google.code.gson:gson:2.12.1")
+    implementation("com.groupdocs:groupdocs-conversion:25.2")
 }
