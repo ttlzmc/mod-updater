@@ -22,13 +22,11 @@ import org.ttlzmc.hwd.DwmAttribute
 import org.ttlzmc.hwd.HwndLookupException
 import org.ttlzmc.hwd.WindowHandle
 import org.ttlzmc.core.MinecraftVersions
-import org.ttlzmc.core.SlugFinder
 import org.ttlzmc.utils.TextBuilder
 import java.io.File
 
 fun main(args: Array<String>) {
     MinecraftVersions.load()
-    SlugFinder.load()
     Application.launch(UpdaterWindow::class.java, *args)
 }
 

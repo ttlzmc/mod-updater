@@ -14,7 +14,7 @@ object ModFinder {
 
     var modsFolderFound: Boolean = false
 
-    private val debugLogger = Logger.getLogger(SlugFinder::class.java.name)
+    private val debugLogger = Logger.getLogger(ModFinder::class.java.name)
 
     lateinit var foundMainLoader: Loader
     lateinit var selectedMinecraftVersion: MinecraftVersions.MinecraftVersion
