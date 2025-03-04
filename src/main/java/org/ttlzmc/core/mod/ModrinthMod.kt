@@ -1,8 +1,6 @@
 package org.ttlzmc.core.mod
 
 import com.google.gson.JsonObject
-import javafx.scene.image.ImageView
-import org.ttlzmc.core.UpdaterCache
 import org.ttlzmc.core.api.LabrinthAPIProvider
 import org.ttlzmc.utils.getString
 import java.net.URL
@@ -11,8 +9,8 @@ import java.net.URL
  * A simple wrapper for `api.modrinth.com/project/`'s response
  */
 class ModrinthMod(
-    apiResponse: JsonObject,
-    version: ModVersion,
+    val apiResponse: JsonObject,
+    val version: ModVersion,
     val loader: Loader,
     private val hash: String,
 ) {

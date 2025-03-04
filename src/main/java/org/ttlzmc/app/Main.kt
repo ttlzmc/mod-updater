@@ -130,7 +130,7 @@ class UpdaterWindow : Application() {
 
             setOnMouseClicked {
                 if (ModFinder.modsFolderFound) {
-                    primaryStage.scene = Scene(ResultPage.init(
+                    primaryStage.scene = Scene(FoundModsPage.init(
                         Loader.FABRIC, foundMods, selectedMinecraftVersion
                     )).apply {
                         stylesheets.add("fluent-dark.css")

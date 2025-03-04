@@ -3,10 +3,15 @@ package org.ttlzmc.app
 import javafx.application.Platform
 import javafx.geometry.Insets
 import javafx.geometry.Pos
+import javafx.scene.control.Button
 import javafx.scene.control.ScrollPane
 import javafx.scene.layout.BorderPane
+import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
+import javafx.scene.shape.Rectangle
+import javafx.scene.text.Font
+import javafx.scene.text.FontWeight
 import javafx.scene.text.Text
 import org.ttlzmc.core.ModFinder
 import org.ttlzmc.core.mod.ModrinthMod
@@ -16,9 +21,8 @@ import org.ttlzmc.core.MinecraftVersions
 import org.ttlzmc.core.api.LabrinthAPIProvider
 import org.ttlzmc.utils.TextBuilder
 import java.util.concurrent.CompletableFuture
-import java.util.logging.Logger
 
-object ResultPage {
+object FoundModsPage {
 
     private lateinit var loader: Loader
     private lateinit var foundMods: List<ModInfo>
@@ -27,19 +31,19 @@ object ResultPage {
     private val root = BorderPane().apply {
         prefHeight = 600.0
         prefWidth = 400.0
-        style = "-fx-background-color: transparent"
     }
 
-    private lateinit var holder: VBox
-    private lateinit var listContainer: VBox
+    private lateinit var textInfoHolder: VBox
+    private lateinit var modViewsHolder: VBox
 
     private lateinit var title: Text
+    private lateinit var statusField: Text
     private lateinit var loaderField: Text
     private lateinit var modsField: Text
 
-    private val modsList: ScrollPane = ScrollPane()
+    private lateinit var updateButton: Button
 
-    private var processedModsCount = 0
+    private val modViewsList: ScrollPane = ScrollPane()
 
     fun init(loader: Loader, foundMods: List<ModInfo>, version: MinecraftVersions.MinecraftVersion): BorderPane {
         ModFinder.foundMainLoader = loader
@@ -55,19 +59,28 @@ object ResultPage {
         return root
     }
 
-    private fun generateModsList() {
-        val container = VBox(10.0)
-        this.modsList.content = container
+    private fun generateModsList() = CompletableFuture.runAsync {
+        val container = VBox()
+        container.spacing = 10.0
+        container.alignment = Pos.CENTER
+        container.padding = Insets(8.0)
+        this.modViewsList.content = container
         foundMods.map { info ->
             LabrinthAPIProvider.getProject(info).run {
-                container.children.add(createModView(this))
+                Platform.runLater { container.children.add(createModView(this)) }
             }
+        }.apply {
+            updateButton.isDisable = false
         }
     }
 
     private fun initComponents() {
         title = TextBuilder.newBuilder("Now, let's see what we got:")
             .withFontSize(25)
+            .build()
+
+        statusField = TextBuilder.newBuilder("Fetching your mods, please wait!")
+            .withFontSize(16)
             .build()
 
         loaderField = TextBuilder.newBuilder("Loader: ${loader.key}, Version: ${minecraftVersion.value}")
@@ -79,7 +92,13 @@ object ResultPage {
             .withFontSize(16)
             .build()
 
-        modsList.apply {
+        updateButton = Button("Update").apply {
+            isDisable = true
+            alignment = Pos.CENTER
+            padding = Insets(10.0)
+        }
+
+        modViewsList.apply {
             maxWidth = 400.0
             maxHeight = 800.0
             prefHeight = 600.0
@@ -88,33 +107,59 @@ object ResultPage {
             vbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
         }
 
-        holder = VBox().apply {
+        textInfoHolder = VBox().apply {
+            padding = Insets(10.0, 10.0, 10.0, 10.0)
             spacing = 10.0
             alignment = Pos.CENTER
             children.addAll(title, loaderField, modsField)
         }
 
-        listContainer = VBox().apply {
+        modViewsHolder = VBox().apply {
             spacing = 10.0
+            padding = Insets(10.0)
             alignment = Pos.CENTER
-            children.add(modsList)
+            children.add(modViewsList)
         }
 
         root.apply {
-            center = holder
-            bottom = listContainer
+            top = textInfoHolder
+            center = modViewsHolder.apply {
+                layoutY += 15
+            }
+            bottom = VBox(updateButton).apply {
+                alignment = Pos.CENTER
+            }
             padding = Insets(15.0, 15.0, 15.0, 15.0)
             heightProperty().addListener { _, _, newValue ->
-                modsList.maxHeight = (newValue as Double / 10) * 7.2
+                modViewsList.maxHeight = (newValue as Double / 10) * 7.2
             }
         }
     }
 
-    private fun createModView(mod: ModrinthMod): VBox {
-        val wrapper = VBox(5.0)
-        val name = Text(mod.name)
-        val desc = Text(mod.description)
-        wrapper.children.addAll(name, desc)
+    private fun createModView(mod: ModrinthMod): HBox {
+        val wrapper = HBox(5.0)
+        val name = Text(mod.name).apply {
+            if (text.length >= 32) {
+                text = text.substring(0..32) + ".."
+            }
+            font = Font.font(font.family, FontWeight.BOLD, 14.0)
+        }
+        val desc = Text(mod.description).apply {
+            font = Font.font(12.0)
+            wrappingWidth = 270.0
+        }
+        val icon = LabrinthAPIProvider.getProjectIcon(mod)?.apply {
+            fitWidth = 64.0
+            fitHeight = 64.0
+            clip = Rectangle(64.0, 64.0).apply {
+                arcWidth = 15.0
+                arcHeight = 15.0
+            }
+        }
+        val info = VBox(5.0).apply {
+            children.addAll(name, desc)
+        }
+        wrapper.children.addAll(icon, info)
         return wrapper
     }
 }

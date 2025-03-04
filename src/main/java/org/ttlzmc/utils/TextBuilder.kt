@@ -2,6 +2,7 @@ package org.ttlzmc.utils
 
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
+import javafx.scene.text.FontWeight
 import javafx.scene.text.Text
 
 object TextBuilder {
@@ -47,6 +48,11 @@ object TextBuilder {
         fun withFontSize(size: Double): Builder {
             this.size = size
             temp.font = Font.font(FONT_NAME, this.size)
+            return this
+        }
+
+        fun bold(): Builder {
+            temp.font = Font.font(FONT_NAME, FontWeight.BOLD, this.size)
             return this
         }
 

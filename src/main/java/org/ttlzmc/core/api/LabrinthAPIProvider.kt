@@ -3,9 +3,12 @@ package org.ttlzmc.core.api
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import javafx.scene.image.ImageView
+import org.ttlzmc.core.IconCache
 import org.ttlzmc.core.mod.ModInfo
 import org.ttlzmc.core.mod.ModVersion
 import org.ttlzmc.core.mod.ModrinthMod
+import org.ttlzmc.utils.getString
 import java.io.File
 import java.io.FileNotFoundException
 import java.net.HttpURLConnection
@@ -102,6 +105,20 @@ object LabrinthAPIProvider {
             return ModVersion(version)
         }
         throw ModrinthAPIResponseException("Error getting latest version for mod: $hash")
+    }
+
+    fun getProjectIcon(mod: ModrinthMod): ImageView? {
+        val url = URI.create(mod.apiResponse.getString("icon_url")).toURL()
+        val connection = url.openConnection() as HttpURLConnection
+        connection.requestMethod = "GET"
+        connection.connectTimeout = 6000
+        connection.readTimeout = 6000
+        connection.connect()
+        if (connection.responseCode in 200..299) {
+            IconCache.cacheIcon("${mod.name}.webp", connection.inputStream)
+            return IconCache.loadIcon("${mod.name}.webp")
+        }
+        throw ModrinthAPIResponseException("Error getting project icon for ${mod.name}")
     }
 
     private fun hashSHA512(file: File): String {
